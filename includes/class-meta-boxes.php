@@ -144,123 +144,120 @@ class Att_Webinar_Meta_Boxes {
      * Render Editor Posizione Campi
      */
     public function render_editor_box($post) {
-        $template_id = get_post_meta($post->ID, '_att_template_id', true);
-        $template_url = $template_id ? wp_get_attachment_url($template_id) : '';
-        
-        // Testo personalizzato
-        $testo_custom = get_post_meta($post->ID, '_att_testo_custom', true);
-
         // Posizioni salvate
         $positions = get_post_meta($post->ID, '_att_field_positions', true);
         if (!$positions) {
             $positions = array(
-                'nome_cognome' => array('x' => 50, 'y' => 40, 'size' => 24, 'color' => '#333333', 'font' => 'helvetica', 'align' => 'center'),
-                'titolo_webinar' => array('x' => 50, 'y' => 30, 'size' => 18, 'color' => '#477C80', 'font' => 'helvetica', 'align' => 'center'),
-                'data_webinar' => array('x' => 50, 'y' => 55, 'size' => 14, 'color' => '#666666', 'font' => 'helvetica', 'align' => 'center'),
-                'testo_custom' => array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'font' => 'helvetica', 'align' => 'center'),
+                'nome_cognome' => array('x' => 50, 'y' => 40, 'size' => 24, 'color' => '#333333', 'align' => 'center'),
+                'titolo_webinar' => array('x' => 50, 'y' => 30, 'size' => 18, 'color' => '#477C80', 'align' => 'center'),
+                'data_webinar' => array('x' => 50, 'y' => 55, 'size' => 14, 'color' => '#666666', 'align' => 'center'),
+                'testo_custom' => array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'align' => 'center'),
                 'logo' => array('x' => 10, 'y' => 10, 'width' => 15),
                 'firma' => array('x' => 70, 'y' => 75, 'width' => 20),
             );
         }
-        // Assicura che testo_custom esista nelle posizioni (per attestati creati prima)
         if (!isset($positions['testo_custom'])) {
-            $positions['testo_custom'] = array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'font' => 'helvetica', 'align' => 'center');
+            $positions['testo_custom'] = array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'align' => 'center');
         }
+
+        // Definizione campi
+        $text_fields = array(
+            'nome_cognome'   => __('Nome e Cognome', 'attestati-webinar'),
+            'titolo_webinar' => __('Titolo Webinar', 'attestati-webinar'),
+            'data_webinar'   => __('Data Webinar', 'attestati-webinar'),
+            'testo_custom'   => __('Testo Personalizzato', 'attestati-webinar'),
+        );
+        $image_fields = array(
+            'logo'  => __('Logo', 'attestati-webinar'),
+            'firma' => __('Firma', 'attestati-webinar'),
+        );
         ?>
-        <div class="att-editor-container">
-            <div class="att-editor-canvas-wrapper">
-                <div class="att-editor-canvas" id="att-editor-canvas"
-                     style="background-image: url('<?php echo esc_url($template_url); ?>');">
+        <p class="description" style="margin-bottom: 15px;">
+            <?php _e('Imposta le coordinate X e Y in percentuale (0-100). X=50, Y=50 corrisponde al centro dell\'immagine. Usa "Anteprima" per verificare il risultato.', 'attestati-webinar'); ?>
+        </p>
 
-                    <?php if (!$template_url): ?>
-                        <div class="att-no-template">
-                            <p><?php _e('Carica un template per vedere lo sfondo', 'attestati-webinar'); ?></p>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Campi draggable (sempre visibili) -->
-                    <div class="att-field att-field-text" id="field-nome_cognome"
-                         data-field="nome_cognome"
-                         data-pos-x="<?php echo esc_attr($positions['nome_cognome']['x']); ?>"
-                         data-pos-y="<?php echo esc_attr($positions['nome_cognome']['y']); ?>">
-                        <span class="att-field-label">Nome e Cognome</span>
-                    </div>
-
-                    <div class="att-field att-field-text" id="field-titolo_webinar"
-                         data-field="titolo_webinar"
-                         data-pos-x="<?php echo esc_attr($positions['titolo_webinar']['x']); ?>"
-                         data-pos-y="<?php echo esc_attr($positions['titolo_webinar']['y']); ?>">
-                        <span class="att-field-label">Titolo Webinar</span>
-                    </div>
-
-                    <div class="att-field att-field-text" id="field-data_webinar"
-                         data-field="data_webinar"
-                         data-pos-x="<?php echo esc_attr($positions['data_webinar']['x']); ?>"
-                         data-pos-y="<?php echo esc_attr($positions['data_webinar']['y']); ?>">
-                        <span class="att-field-label">Data Webinar</span>
-                    </div>
-
-                    <div class="att-field att-field-text" id="field-testo_custom"
-                         data-field="testo_custom"
-                         data-pos-x="<?php echo esc_attr($positions['testo_custom']['x']); ?>"
-                         data-pos-y="<?php echo esc_attr($positions['testo_custom']['y']); ?>">
-                        <span class="att-field-label">Testo Personalizzato</span>
-                    </div>
-
-                    <div class="att-field att-field-image" id="field-logo"
-                         data-field="logo"
-                         data-pos-x="<?php echo esc_attr($positions['logo']['x']); ?>"
-                         data-pos-y="<?php echo esc_attr($positions['logo']['y']); ?>">
-                        <span class="att-field-label">Logo</span>
-                    </div>
-
-                    <div class="att-field att-field-image" id="field-firma"
-                         data-field="firma"
-                         data-pos-x="<?php echo esc_attr($positions['firma']['x']); ?>"
-                         data-pos-y="<?php echo esc_attr($positions['firma']['y']); ?>">
-                        <span class="att-field-label">Firma</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="att-editor-sidebar">
-                <h4><?php _e('Proprietà Campo', 'attestati-webinar'); ?></h4>
-                <div class="att-field-properties" id="att-field-properties">
-                    <p class="att-select-field-msg"><?php _e('Seleziona un campo per modificarne le proprietà', 'attestati-webinar'); ?></p>
-                    
-                    <div class="att-property-group" style="display:none;">
-                        <label><?php _e('Dimensione Font', 'attestati-webinar'); ?></label>
-                        <input type="number" id="prop-font-size" min="8" max="72" value="18">
-                    </div>
-                    
-                    <div class="att-property-group" style="display:none;">
-                        <label><?php _e('Colore', 'attestati-webinar'); ?></label>
-                        <input type="color" id="prop-color" value="#333333">
-                    </div>
-                    
-                    <div class="att-property-group" style="display:none;">
-                        <label><?php _e('Allineamento', 'attestati-webinar'); ?></label>
-                        <select id="prop-align">
-                            <option value="left"><?php _e('Sinistra', 'attestati-webinar'); ?></option>
-                            <option value="center"><?php _e('Centro', 'attestati-webinar'); ?></option>
-                            <option value="right"><?php _e('Destra', 'attestati-webinar'); ?></option>
+        <table class="widefat att-positions-table">
+            <thead>
+                <tr>
+                    <th><?php _e('Campo', 'attestati-webinar'); ?></th>
+                    <th><?php _e('Dato', 'attestati-webinar'); ?></th>
+                    <th style="width:70px;">X %</th>
+                    <th style="width:70px;">Y %</th>
+                    <th style="width:70px;"><?php _e('Font', 'attestati-webinar'); ?></th>
+                    <th style="width:80px;"><?php _e('Colore', 'attestati-webinar'); ?></th>
+                    <th style="width:100px;"><?php _e('Allineamento', 'attestati-webinar'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($text_fields as $key => $label):
+                    $pos = isset($positions[$key]) ? $positions[$key] : array();
+                ?>
+                <tr>
+                    <td><strong><?php echo esc_html($label); ?></strong></td>
+                    <td class="att-field-source">
+                        <?php
+                        switch ($key) {
+                            case 'nome_cognome':
+                                _e('da ordine WooCommerce', 'attestati-webinar');
+                                break;
+                            case 'titolo_webinar':
+                                _e('da impostazioni', 'attestati-webinar');
+                                break;
+                            case 'data_webinar':
+                                _e('da impostazioni', 'attestati-webinar');
+                                break;
+                            case 'testo_custom':
+                                _e('da impostazioni', 'attestati-webinar');
+                                break;
+                        }
+                        ?>
+                    </td>
+                    <td><input type="number" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="x" min="0" max="100" step="1" value="<?php echo esc_attr(isset($pos['x']) ? $pos['x'] : 50); ?>"></td>
+                    <td><input type="number" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="y" min="0" max="100" step="1" value="<?php echo esc_attr(isset($pos['y']) ? $pos['y'] : 50); ?>"></td>
+                    <td><input type="number" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="size" min="8" max="72" value="<?php echo esc_attr(isset($pos['size']) ? $pos['size'] : 18); ?>"></td>
+                    <td><input type="color" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="color" value="<?php echo esc_attr(isset($pos['color']) ? $pos['color'] : '#333333'); ?>"></td>
+                    <td>
+                        <select class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="align">
+                            <option value="left" <?php selected(isset($pos['align']) ? $pos['align'] : 'center', 'left'); ?>><?php _e('Sx', 'attestati-webinar'); ?></option>
+                            <option value="center" <?php selected(isset($pos['align']) ? $pos['align'] : 'center', 'center'); ?>><?php _e('Centro', 'attestati-webinar'); ?></option>
+                            <option value="right" <?php selected(isset($pos['align']) ? $pos['align'] : 'center', 'right'); ?>><?php _e('Dx', 'attestati-webinar'); ?></option>
                         </select>
-                    </div>
-                    
-                    <div class="att-property-group att-image-prop" style="display:none;">
-                        <label><?php _e('Larghezza (%)', 'attestati-webinar'); ?></label>
-                        <input type="number" id="prop-width" min="5" max="50" value="15">
-                    </div>
-                </div>
-                
-                <input type="hidden" name="att_field_positions" id="att_field_positions" value='<?php echo esc_attr(json_encode($positions)); ?>'>
-            </div>
-        </div>
-        
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <table class="widefat att-positions-table" style="margin-top: 15px;">
+            <thead>
+                <tr>
+                    <th><?php _e('Immagine', 'attestati-webinar'); ?></th>
+                    <th style="width:70px;">X %</th>
+                    <th style="width:70px;">Y %</th>
+                    <th style="width:90px;"><?php _e('Larghezza %', 'attestati-webinar'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($image_fields as $key => $label):
+                    $pos = isset($positions[$key]) ? $positions[$key] : array();
+                ?>
+                <tr>
+                    <td><strong><?php echo esc_html($label); ?></strong></td>
+                    <td><input type="number" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="x" min="0" max="100" step="1" value="<?php echo esc_attr(isset($pos['x']) ? $pos['x'] : 10); ?>"></td>
+                    <td><input type="number" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="y" min="0" max="100" step="1" value="<?php echo esc_attr(isset($pos['y']) ? $pos['y'] : 10); ?>"></td>
+                    <td><input type="number" class="att-pos-input" data-field="<?php echo esc_attr($key); ?>" data-prop="width" min="5" max="80" step="1" value="<?php echo esc_attr(isset($pos['width']) ? $pos['width'] : 15); ?>"></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <input type="hidden" name="att_field_positions" id="att_field_positions" value='<?php echo esc_attr(json_encode($positions)); ?>'>
+
         <div class="att-preview-section">
-            <button type="button" class="button button-secondary" id="att-preview-btn">
+            <button type="button" class="button button-primary" id="att-preview-btn">
                 <?php _e('👁️ Anteprima Attestato', 'attestati-webinar'); ?>
             </button>
+            <p class="description"><?php _e('Salva prima il post, poi clicca Anteprima per vedere il risultato.', 'attestati-webinar'); ?></p>
             <div id="att-preview-result"></div>
         </div>
         <?php

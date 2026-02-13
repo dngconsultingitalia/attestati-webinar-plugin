@@ -50,110 +50,44 @@
     object-fit: contain;
 }
 
-/* Editor Canvas */
-.att-editor-container {
-    display: flex;
-    gap: 20px;
-    margin-top: 15px;
+/* Positions Table */
+.att-positions-table {
+    border-collapse: collapse;
 }
 
-.att-editor-canvas-wrapper {
-    flex: 1;
-    min-width: 0;
+.att-positions-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 13px;
 }
 
-.att-editor-canvas {
-    position: relative;
-    width: 100%;
-    padding-bottom: 70.7%; /* A4 ratio */
-    background-color: #f0f0f0;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+.att-positions-table td {
+    padding: 6px 10px;
+    vertical-align: middle;
+}
+
+.att-positions-table input[type="number"] {
+    width: 60px;
+    padding: 4px 6px;
+}
+
+.att-positions-table input[type="color"] {
+    width: 40px;
+    height: 30px;
+    padding: 1px;
     border: 1px solid #c3c4c7;
-    border-radius: 4px;
+    border-radius: 3px;
+    cursor: pointer;
 }
 
-.att-no-template {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+.att-positions-table select {
+    padding: 4px 6px;
+}
+
+.att-field-source {
     color: #646970;
-}
-
-/* Draggable Fields */
-.att-field {
-    position: absolute;
-    padding: 8px 12px;
-    background: rgba(71, 124, 128, 0.9);
-    color: white;
-    border-radius: 4px;
-    cursor: move;
     font-size: 12px;
-    white-space: nowrap;
-    transition: box-shadow 0.2s;
-    z-index: 10;
-}
-
-.att-field:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.att-field.ui-draggable-dragging {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    z-index: 100;
-}
-
-.att-field.selected {
-    outline: 3px solid #C9A86C;
-    outline-offset: 2px;
-}
-
-.att-field-image {
-    background: rgba(201, 168, 108, 0.9);
-}
-
-.att-field-label {
-    pointer-events: none;
-}
-
-/* Editor Sidebar */
-.att-editor-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-}
-
-.att-editor-sidebar h4 {
-    margin-top: 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #c3c4c7;
-}
-
-.att-select-field-msg {
-    color: #646970;
     font-style: italic;
-}
-
-.att-property-group {
-    margin-bottom: 15px;
-}
-
-.att-property-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.att-property-group input,
-.att-property-group select {
-    width: 100%;
-}
-
-.att-property-group input[type="color"] {
-    height: 40px;
-    padding: 2px;
 }
 
 /* Preview Section */
@@ -219,29 +153,4 @@
 #att-action-result.error {
     background: #f8d7da;
     color: #721c24;
-}
-
-/* Loading */
-.att-loading {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
-.att-loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 30px;
-    height: 30px;
-    margin: -15px 0 0 -15px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #477C80;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
