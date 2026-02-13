@@ -13,23 +13,46 @@
         loadPositions();
         initPreview();
         initActions();
-
-        // Inizializza editor dopo un breve delay per assicurare il rendering del canvas
-        setTimeout(function() {
-            placeFieldsOnCanvas();
-            initDraggableFields();
-            initFieldProperties();
-        }, 100);
+        initCanvas();
     });
 
     /**
-     * Ottiene le dimensioni reali del canvas (padding-bottom crea altezza virtuale)
+     * Imposta altezza esplicita del canvas in pixel (A4 landscape = 70.7%)
+     * jQuery UI draggable ha bisogno di un'altezza reale, non padding-bottom.
      */
-    function getCanvasRect() {
-        var canvas = document.getElementById('att-editor-canvas');
-        if (!canvas) return { width: 0, height: 0 };
-        var rect = canvas.getBoundingClientRect();
-        return { width: rect.width, height: rect.height };
+    function setCanvasHeight() {
+        var $canvas = $('#att-editor-canvas');
+        if (!$canvas.length) return;
+        var w = $canvas.width();
+        if (w > 0) {
+            $canvas.css('height', Math.round(w * 0.707) + 'px');
+        }
+    }
+
+    /**
+     * Inizializza il canvas: imposta altezza, posiziona i campi, attiva il drag
+     */
+    function initCanvas() {
+        var $canvas = $('#att-editor-canvas');
+        if (!$canvas.length) return;
+
+        // Imposta altezza esplicita
+        setCanvasHeight();
+
+        // Ricalcola al resize
+        $(window).on('resize', function() {
+            setCanvasHeight();
+            placeFieldsOnCanvas();
+        });
+
+        // Posiziona i campi e attiva il drag dopo un breve delay
+        setTimeout(function() {
+            setCanvasHeight();
+            applyFieldVisibility();
+            placeFieldsOnCanvas();
+            initDraggableFields();
+            initFieldProperties();
+        }, 200);
     }
 
     /**
@@ -83,8 +106,11 @@
      * Posiziona i campi sul canvas convertendo da percentuale (centro) a pixel (top-left)
      */
     function placeFieldsOnCanvas() {
-        var size = getCanvasRect();
-        if (size.width === 0 || size.height === 0) return;
+        var $canvas = $('#att-editor-canvas');
+        if (!$canvas.length) return;
+        var cw = $canvas.width();
+        var ch = $canvas.height();
+        if (cw === 0 || ch === 0) return;
 
         $('.att-field').each(function() {
             var $field = $(this);
@@ -92,48 +118,68 @@
             var pos = positions[fieldName];
             if (!pos) return;
 
-            var centerX = (pos.x / 100) * size.width;
-            var centerY = (pos.y / 100) * size.height;
-            var left = centerX - ($field.outerWidth() / 2);
-            var top = centerY - ($field.outerHeight() / 2);
+            var fw = $field.outerWidth();
+            var fh = $field.outerHeight();
+            var centerX = (pos.x / 100) * cw;
+            var centerY = (pos.y / 100) * ch;
+            var left = centerX - (fw / 2);
+            var top = centerY - (fh / 2);
 
-            // Clamp
-            left = Math.max(0, Math.min(left, size.width - $field.outerWidth()));
-            top = Math.max(0, Math.min(top, size.height - $field.outerHeight()));
+            // Clamp dentro il canvas
+            left = Math.max(0, Math.min(left, cw - fw));
+            top = Math.max(0, Math.min(top, ch - fh));
 
             $field.css({ left: Math.round(left) + 'px', top: Math.round(top) + 'px' });
         });
     }
 
     /**
-     * Draggable Fields
+     * Draggable Fields con jQuery UI
      */
     function initDraggableFields() {
         var $canvas = $('#att-editor-canvas');
+        if (!$canvas.length) return;
 
-        $('.att-field').draggable({
-            containment: 'parent',
-            stop: function(event, ui) {
-                var $field = $(this);
-                var fieldName = $field.data('field');
-                var size = getCanvasRect();
-                if (size.width === 0 || size.height === 0) return;
+        // Calcola il bounding box reale per il containment
+        var offset = $canvas.offset();
+        var cw = $canvas.width();
+        var ch = $canvas.height();
 
-                // ui.position = posizione top-left in pixel relativa al parent
-                var posX = (ui.position.left + ($field.outerWidth() / 2)) / size.width * 100;
-                var posY = (ui.position.top + ($field.outerHeight() / 2)) / size.height * 100;
+        $('.att-field').each(function() {
+            var $field = $(this);
 
-                posX = Math.max(0, Math.min(100, posX));
-                posY = Math.max(0, Math.min(100, posY));
+            // Salta campi gia resi draggable
+            if ($field.hasClass('ui-draggable')) return;
 
-                if (!positions[fieldName]) {
-                    positions[fieldName] = {};
+            $field.draggable({
+                containment: [offset.left, offset.top, offset.left + cw - $field.outerWidth(), offset.top + ch - $field.outerHeight()],
+                scroll: false,
+                stop: function(event, ui) {
+                    var fieldName = $field.data('field');
+                    var canvasOff = $canvas.offset();
+                    var canvasW = $canvas.width();
+                    var canvasH = $canvas.height();
+                    if (canvasW === 0 || canvasH === 0) return;
+
+                    // ui.offset = posizione assoluta nella pagina
+                    var fieldLeft = ui.offset.left - canvasOff.left;
+                    var fieldTop = ui.offset.top - canvasOff.top;
+
+                    var posX = (fieldLeft + ($field.outerWidth() / 2)) / canvasW * 100;
+                    var posY = (fieldTop + ($field.outerHeight() / 2)) / canvasH * 100;
+
+                    posX = Math.max(0, Math.min(100, posX));
+                    posY = Math.max(0, Math.min(100, posY));
+
+                    if (!positions[fieldName]) {
+                        positions[fieldName] = {};
+                    }
+                    positions[fieldName].x = Math.round(posX * 10) / 10;
+                    positions[fieldName].y = Math.round(posY * 10) / 10;
+
+                    savePositions();
                 }
-                positions[fieldName].x = Math.round(posX * 10) / 10;
-                positions[fieldName].y = Math.round(posY * 10) / 10;
-
-                savePositions();
-            }
+            });
         });
 
         // Click per selezionare
@@ -169,6 +215,9 @@
             $('#prop-width').val(pos.width || 15);
         }
 
+        // Mostra bottone nascondi
+        $('.att-hide-field-btn').show();
+
         $('.att-select-field-msg').hide();
     }
 
@@ -176,11 +225,12 @@
         $('.att-field').removeClass('selected');
         selectedField = null;
         $('.att-text-prop, .att-image-prop').hide();
+        $('.att-hide-field-btn').hide();
         $('.att-select-field-msg').show();
     }
 
     /**
-     * Proprietà campo
+     * Proprieta campo
      */
     function initFieldProperties() {
         $('#prop-font-size, #prop-color, #prop-align, #prop-width').on('change', function() {
@@ -196,6 +246,63 @@
             positions[selectedField].width = parseInt($('#prop-width').val());
 
             savePositions();
+        });
+
+        // Bottone "Nascondi campo" nella sidebar
+        $('#att-hide-selected-field').on('click', function() {
+            if (!selectedField) return;
+            toggleFieldVisibility(selectedField);
+            deselectField();
+        });
+
+        // Checkbox nella lista campi (sidebar)
+        $(document).on('change', '.att-field-toggle', function() {
+            var fieldName = $(this).data('field');
+            var visible = $(this).is(':checked');
+
+            if (!positions[fieldName]) {
+                positions[fieldName] = {};
+            }
+            positions[fieldName].hidden = !visible;
+            savePositions();
+
+            applyFieldVisibility();
+        });
+    }
+
+    /**
+     * Toggle visibilita di un campo
+     */
+    function toggleFieldVisibility(fieldName) {
+        if (!positions[fieldName]) {
+            positions[fieldName] = {};
+        }
+        positions[fieldName].hidden = !positions[fieldName].hidden;
+        savePositions();
+        applyFieldVisibility();
+    }
+
+    /**
+     * Applica la visibilita ai campi sul canvas e aggiorna le checkbox
+     */
+    function applyFieldVisibility() {
+        $('.att-field').each(function() {
+            var $field = $(this);
+            var fieldName = $field.data('field');
+            var pos = positions[fieldName] || {};
+
+            if (pos.hidden) {
+                $field.addClass('att-field-hidden');
+            } else {
+                $field.removeClass('att-field-hidden');
+            }
+        });
+
+        // Aggiorna checkbox nella lista
+        $('.att-field-toggle').each(function() {
+            var fieldName = $(this).data('field');
+            var pos = positions[fieldName] || {};
+            $(this).prop('checked', !pos.hidden);
         });
     }
 
@@ -225,7 +332,7 @@
                 nonce: attWebinar.nonce,
                 attestato_id: postId
             }, function(response) {
-                $btn.prop('disabled', false).text('👁️ Anteprima Attestato');
+                $btn.prop('disabled', false).text('Anteprima Attestato');
 
                 if (response.success) {
                     $('#att-preview-result').html('<img src="' + response.data.url + '" alt="Anteprima">');
@@ -255,7 +362,7 @@
                 nonce: attWebinar.nonce,
                 attestato_id: postId
             }, function(response) {
-                $btn.prop('disabled', false).text('🔄 Genera Tutti gli Attestati');
+                $btn.prop('disabled', false).text('Genera Tutti gli Attestati');
 
                 if (response.success) {
                     $('#att-action-result')
@@ -310,7 +417,7 @@
                         if (remaining > 0 && response.data.sent > 0) {
                             setTimeout(sendBatch, 1000);
                         } else {
-                            $btn.prop('disabled', false).text('📧 Invia Tutti gli Attestati');
+                            $btn.prop('disabled', false).text('Invia Tutti gli Attestati');
                             $result.html(
                                 'Completato! Inviati ' + totalSent + ' attestati' +
                                 (totalErrors > 0 ? ', ' + totalErrors + ' errori' : '') +
@@ -318,11 +425,11 @@
                             );
                         }
                     } else {
-                        $btn.prop('disabled', false).text('📧 Invia Tutti gli Attestati');
+                        $btn.prop('disabled', false).text('Invia Tutti gli Attestati');
                         $result.removeClass('success').addClass('error').html(response.data);
                     }
                 }).fail(function() {
-                    $btn.prop('disabled', false).text('📧 Invia Tutti gli Attestati');
+                    $btn.prop('disabled', false).text('Invia Tutti gli Attestati');
                     $result.removeClass('success').addClass('error').html('Errore di connessione. Riprova.');
                 });
             }

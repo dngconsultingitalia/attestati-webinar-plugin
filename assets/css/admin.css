@@ -62,18 +62,17 @@
     min-width: 0;
 }
 
-/* Canvas - l'altezza viene dal padding-bottom (rapporto A4) */
+/* Canvas - l'altezza viene impostata da JS (rapporto A4 landscape) */
 .att-editor-canvas {
     position: relative;
     width: 100%;
-    height: 0;
-    padding-bottom: 70.7%; /* A4 ratio */
     background-color: #f0f0f0;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     border: 1px solid #c3c4c7;
     border-radius: 4px;
+    overflow: visible;
 }
 
 .att-no-template {
@@ -119,6 +118,50 @@
 
 .att-field-label {
     pointer-events: none;
+}
+
+.att-field-remove {
+    display: inline-block;
+    margin-left: 6px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    font-size: 10px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.att-field-remove:hover {
+    background: rgba(200,0,0,0.7);
+}
+
+.att-field.att-field-hidden {
+    opacity: 0.35;
+    border: 2px dashed rgba(255,255,255,0.5);
+}
+
+/* Field list (sidebar) */
+.att-field-list {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.att-field-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.att-field-list-item label {
+    font-size: 12px;
+    font-weight: normal !important;
+    margin-bottom: 0 !important;
+    cursor: pointer;
 }
 
 /* Editor Sidebar */

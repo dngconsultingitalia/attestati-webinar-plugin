@@ -201,6 +201,29 @@ class Att_Webinar_Meta_Boxes {
             </div>
 
             <div class="att-editor-sidebar">
+                <h4><?php _e('Campi Visibili', 'attestati-webinar'); ?></h4>
+                <div class="att-field-list">
+                    <?php
+                    $field_labels = array(
+                        'nome_cognome' => __('Nome e Cognome', 'attestati-webinar'),
+                        'titolo_webinar' => __('Titolo Webinar', 'attestati-webinar'),
+                        'data_webinar' => __('Data Webinar', 'attestati-webinar'),
+                        'testo_custom' => __('Testo Personalizzato', 'attestati-webinar'),
+                        'logo' => __('Logo', 'attestati-webinar'),
+                        'firma' => __('Firma', 'attestati-webinar'),
+                    );
+                    foreach ($field_labels as $fname => $flabel):
+                        $is_hidden = !empty($positions[$fname]['hidden']);
+                    ?>
+                    <div class="att-field-list-item">
+                        <label>
+                            <input type="checkbox" class="att-field-toggle" data-field="<?php echo esc_attr($fname); ?>" <?php checked(!$is_hidden); ?>>
+                            <?php echo esc_html($flabel); ?>
+                        </label>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
                 <h4><?php _e('Proprietà Campo', 'attestati-webinar'); ?></h4>
                 <div id="att-field-properties">
                     <p class="att-select-field-msg"><?php _e('Clicca un campo per modificarne le proprietà', 'attestati-webinar'); ?></p>
@@ -227,6 +250,12 @@ class Att_Webinar_Meta_Boxes {
                     <div class="att-property-group att-image-prop" style="display:none;">
                         <label><?php _e('Larghezza (%)', 'attestati-webinar'); ?></label>
                         <input type="number" id="prop-width" min="5" max="50" value="15">
+                    </div>
+
+                    <div class="att-property-group att-hide-field-btn" style="display:none;">
+                        <button type="button" class="button" id="att-hide-selected-field" style="width:100%; color:#b32d2e;">
+                            <?php _e('Nascondi questo campo', 'attestati-webinar'); ?>
+                        </button>
                     </div>
                 </div>
             </div>

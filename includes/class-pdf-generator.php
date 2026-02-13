@@ -198,8 +198,11 @@ class Att_Webinar_PDF_Generator {
             return false;
         }
 
-        // Aggiungi testi
+        // Aggiungi testi (salta campi nascosti)
         foreach (['nome_cognome', 'titolo_webinar', 'data_webinar', 'testo_custom'] as $field) {
+            if (isset($positions[$field]) && !empty($positions[$field]['hidden'])) {
+                continue;
+            }
             if (isset($positions[$field]) && isset($data[$field]) && $data[$field] !== '') {
                 $pos = $positions[$field];
                 $x = ($pos['x'] / 100) * $width;
@@ -233,18 +236,18 @@ class Att_Webinar_PDF_Generator {
             }
         }
         
-        // Aggiungi logo
+        // Aggiungi logo (se non nascosto)
         $logo_id = get_post_meta($attestato_id, '_att_logo_id', true);
-        if ($logo_id && isset($positions['logo'])) {
+        if ($logo_id && isset($positions['logo']) && empty($positions['logo']['hidden'])) {
             $logo_path = get_attached_file($logo_id);
             if (file_exists($logo_path)) {
                 $this->add_image_to_canvas($image, $logo_path, $positions['logo'], $width, $height);
             }
         }
-        
-        // Aggiungi firma
+
+        // Aggiungi firma (se non nascosta)
         $firma_id = get_post_meta($attestato_id, '_att_firma_id', true);
-        if ($firma_id && isset($positions['firma'])) {
+        if ($firma_id && isset($positions['firma']) && empty($positions['firma']['hidden'])) {
             $firma_path = get_attached_file($firma_id);
             if (file_exists($firma_path)) {
                 $this->add_image_to_canvas($image, $firma_path, $positions['firma'], $width, $height);
