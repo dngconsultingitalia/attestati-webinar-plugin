@@ -477,10 +477,16 @@ class Att_Webinar_Meta_Boxes {
         }
 
         $attestato_id = intval($_POST['attestato_id']);
-        
+
+        // Usa le posizioni live dall'editor (non quelle salvate nel DB)
+        $live_positions = null;
+        if (!empty($_POST['positions'])) {
+            $live_positions = json_decode(stripslashes($_POST['positions']), true);
+        }
+
         $generator = new Att_Webinar_PDF_Generator();
-        $result = $generator->generate_preview($attestato_id);
-        
+        $result = $generator->generate_preview($attestato_id, $live_positions);
+
         if ($result) {
             wp_send_json_success(array('url' => $result));
         } else {

@@ -330,7 +330,8 @@
             $.post(attWebinar.ajaxurl, {
                 action: 'att_webinar_preview',
                 nonce: attWebinar.nonce,
-                attestato_id: postId
+                attestato_id: postId,
+                positions: JSON.stringify(positions)
             }, function(response) {
                 $btn.prop('disabled', false).text('Anteprima Attestato');
 

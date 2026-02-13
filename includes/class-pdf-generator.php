@@ -28,15 +28,15 @@ class Att_Webinar_PDF_Generator {
     /**
      * Genera anteprima con dati fittizi
      */
-    public function generate_preview($attestato_id) {
+    public function generate_preview($attestato_id, $live_positions = null) {
         $data = array(
             'nome_cognome' => 'Mario Rossi',
             'titolo_webinar' => get_post_meta($attestato_id, '_att_webinar_title', true) ?: 'Titolo Webinar di Esempio',
             'data_webinar' => get_post_meta($attestato_id, '_att_webinar_date', true) ?: date('Y-m-d'),
             'testo_custom' => get_post_meta($attestato_id, '_att_testo_custom', true) ?: '',
         );
-        
-        return $this->generate_certificate($attestato_id, $data, 'preview');
+
+        return $this->generate_certificate($attestato_id, $data, 'preview', $live_positions);
     }
     
     /**
@@ -149,7 +149,7 @@ class Att_Webinar_PDF_Generator {
     /**
      * Genera il certificato come immagine
      */
-    public function generate_certificate($attestato_id, $data, $filename = 'preview') {
+    public function generate_certificate($attestato_id, $data, $filename = 'preview', $override_positions = null) {
         // Carica template
         $template_id = get_post_meta($attestato_id, '_att_template_id', true);
         if (!$template_id) {
@@ -163,8 +163,8 @@ class Att_Webinar_PDF_Generator {
             return false;
         }
 
-        // Carica posizioni
-        $positions = get_post_meta($attestato_id, '_att_field_positions', true);
+        // Usa posizioni live se fornite, altrimenti leggi dal DB
+        $positions = $override_positions ? $override_positions : get_post_meta($attestato_id, '_att_field_positions', true);
 
         // Carica immagine template
         $extension = strtolower(pathinfo($template_path, PATHINFO_EXTENSION));
