@@ -151,16 +151,16 @@ class Att_Webinar_Meta_Boxes {
         $positions = get_post_meta($post->ID, '_att_field_positions', true);
         if (!$positions) {
             $positions = array(
-                'nome_cognome' => array('x' => 50, 'y' => 40, 'size' => 24, 'color' => '#333333', 'align' => 'center'),
-                'titolo_webinar' => array('x' => 50, 'y' => 30, 'size' => 18, 'color' => '#477C80', 'align' => 'center'),
-                'data_webinar' => array('x' => 50, 'y' => 55, 'size' => 14, 'color' => '#666666', 'align' => 'center'),
-                'testo_custom' => array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'align' => 'center'),
-                'logo' => array('x' => 10, 'y' => 10, 'width' => 15),
-                'firma' => array('x' => 70, 'y' => 75, 'width' => 20),
+                'nome_cognome' => array('x' => 50, 'y' => 29, 'size' => 32, 'color' => '#333333', 'align' => 'center'),
+                'titolo_webinar' => array('x' => 50, 'y' => 42, 'size' => 22, 'color' => '#477C80', 'align' => 'center'),
+                'data_webinar' => array('x' => 50, 'y' => 53, 'size' => 20, 'color' => '#666666', 'align' => 'center'),
+                'testo_custom' => array('x' => 50, 'y' => 62, 'size' => 16, 'color' => '#333333', 'align' => 'center'),
+                'logo' => array('x' => 8, 'y' => 6, 'width' => 12),
+                'firma' => array('x' => 79, 'y' => 78, 'width' => 15),
             );
         }
         if (!isset($positions['testo_custom'])) {
-            $positions['testo_custom'] = array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'align' => 'center');
+            $positions['testo_custom'] = array('x' => 50, 'y' => 62, 'size' => 16, 'color' => '#333333', 'align' => 'center');
         }
         ?>
         <div class="att-editor-container">
