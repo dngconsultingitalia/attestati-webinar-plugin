@@ -1,0 +1,249 @@
+/**
+ * Admin CSS - Attestati Webinar
+ */
+
+/* Upload Template Section */
+.att-template-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.att-upload-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.att-upload-row label {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.att-upload-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.att-preview-image {
+    width: 300px;
+    height: 200px;
+    border: 2px dashed #c3c4c7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f6f7f7;
+    overflow: hidden;
+}
+
+.att-preview-image.small {
+    width: 150px;
+    height: 100px;
+}
+
+.att-preview-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Editor Canvas */
+.att-editor-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.att-editor-canvas-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.att-editor-canvas {
+    position: relative;
+    width: 100%;
+    padding-bottom: 70.7%; /* A4 ratio */
+    background-color: #f0f0f0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.att-no-template {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #646970;
+}
+
+/* Draggable Fields */
+.att-field {
+    position: absolute;
+    padding: 8px 12px;
+    background: rgba(71, 124, 128, 0.9);
+    color: white;
+    border-radius: 4px;
+    cursor: move;
+    font-size: 12px;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    transition: box-shadow 0.2s;
+    z-index: 10;
+}
+
+.att-field:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.att-field.ui-draggable-dragging {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    z-index: 100;
+}
+
+.att-field.selected {
+    outline: 3px solid #C9A86C;
+    outline-offset: 2px;
+}
+
+.att-field-image {
+    background: rgba(201, 168, 108, 0.9);
+}
+
+.att-field-label {
+    pointer-events: none;
+}
+
+/* Editor Sidebar */
+.att-editor-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.att-editor-sidebar h4 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.att-select-field-msg {
+    color: #646970;
+    font-style: italic;
+}
+
+.att-property-group {
+    margin-bottom: 15px;
+}
+
+.att-property-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.att-property-group input,
+.att-property-group select {
+    width: 100%;
+}
+
+.att-property-group input[type="color"] {
+    height: 40px;
+    padding: 2px;
+}
+
+/* Preview Section */
+.att-preview-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #c3c4c7;
+}
+
+#att-preview-result {
+    margin-top: 15px;
+}
+
+#att-preview-result img {
+    max-width: 100%;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+/* Product Connection */
+.att-product-connection p {
+    margin-bottom: 15px;
+}
+
+.att-product-connection label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+/* Send Settings */
+.att-send-settings p {
+    margin-bottom: 15px;
+}
+
+.att-send-settings label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.att-send-settings .description {
+    color: #646970;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Actions */
+.att-actions p {
+    margin-bottom: 10px;
+}
+
+#att-action-result {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#att-action-result.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+#att-action-result.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Loading */
+.att-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.att-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #477C80;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
