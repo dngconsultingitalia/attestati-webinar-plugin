@@ -50,44 +50,112 @@
     object-fit: contain;
 }
 
-/* Positions Table */
-.att-positions-table {
-    border-collapse: collapse;
+/* Editor Container */
+.att-editor-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
 }
 
-.att-positions-table th {
-    text-align: left;
-    padding: 8px 10px;
-    font-size: 13px;
+.att-editor-canvas-wrapper {
+    flex: 1;
+    min-width: 0;
 }
 
-.att-positions-table td {
-    padding: 6px 10px;
-    vertical-align: middle;
-}
-
-.att-positions-table input[type="number"] {
-    width: 60px;
-    padding: 4px 6px;
-}
-
-.att-positions-table input[type="color"] {
-    width: 40px;
-    height: 30px;
-    padding: 1px;
+/* Canvas - l'altezza viene dal padding-bottom (rapporto A4) */
+.att-editor-canvas {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 70.7%; /* A4 ratio */
+    background-color: #f0f0f0;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
     border: 1px solid #c3c4c7;
-    border-radius: 3px;
-    cursor: pointer;
+    border-radius: 4px;
 }
 
-.att-positions-table select {
-    padding: 4px 6px;
-}
-
-.att-field-source {
+.att-no-template {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
     color: #646970;
+}
+
+/* Draggable Fields - NO transform, posizionati via JS */
+.att-field {
+    position: absolute;
+    padding: 6px 10px;
+    background: rgba(71, 124, 128, 0.85);
+    color: white;
+    border-radius: 4px;
+    cursor: move;
     font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    user-select: none;
+}
+
+.att-field:hover {
+    background: rgba(71, 124, 128, 1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.att-field.selected {
+    outline: 3px solid #C9A86C;
+    outline-offset: 2px;
+}
+
+.att-field-image {
+    background: rgba(201, 168, 108, 0.85);
+}
+
+.att-field-image:hover {
+    background: rgba(201, 168, 108, 1);
+}
+
+.att-field-label {
+    pointer-events: none;
+}
+
+/* Editor Sidebar */
+.att-editor-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+.att-editor-sidebar h4 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.att-select-field-msg {
+    color: #646970;
     font-style: italic;
+}
+
+.att-property-group {
+    margin-bottom: 15px;
+}
+
+.att-property-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.att-property-group input,
+.att-property-group select {
+    width: 100%;
+}
+
+.att-property-group input[type="color"] {
+    height: 36px;
+    padding: 2px;
 }
 
 /* Preview Section */

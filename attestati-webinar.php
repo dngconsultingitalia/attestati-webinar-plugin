@@ -186,7 +186,7 @@ class Attestati_Webinar {
             wp_enqueue_script(
                 'att-webinar-admin',
                 ATT_WEBINAR_URL . 'assets/js/admin.js',
-                array('jquery'),
+                array('jquery', 'jquery-ui-draggable'),
                 ATT_WEBINAR_VERSION,
                 true
             );
