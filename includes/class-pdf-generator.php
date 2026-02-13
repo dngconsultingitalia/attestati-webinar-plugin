@@ -33,6 +33,7 @@ class Att_Webinar_PDF_Generator {
             'nome_cognome' => 'Mario Rossi',
             'titolo_webinar' => get_post_meta($attestato_id, '_att_webinar_title', true) ?: 'Titolo Webinar di Esempio',
             'data_webinar' => get_post_meta($attestato_id, '_att_webinar_date', true) ?: date('Y-m-d'),
+            'testo_custom' => get_post_meta($attestato_id, '_att_testo_custom', true) ?: '',
         );
         
         return $this->generate_certificate($attestato_id, $data, 'preview');
@@ -112,6 +113,7 @@ class Att_Webinar_PDF_Generator {
             'nome_cognome' => $nome_cognome,
             'titolo_webinar' => get_post_meta($attestato_id, '_att_webinar_title', true),
             'data_webinar' => get_post_meta($attestato_id, '_att_webinar_date', true),
+            'testo_custom' => get_post_meta($attestato_id, '_att_testo_custom', true) ?: '',
         );
         
         // Genera codice univoco
@@ -151,20 +153,22 @@ class Att_Webinar_PDF_Generator {
         // Carica template
         $template_id = get_post_meta($attestato_id, '_att_template_id', true);
         if (!$template_id) {
+            $this->last_error = __('Nessun template caricato. Carica un\'immagine template prima.', 'attestati-webinar');
             return false;
         }
-        
+
         $template_path = get_attached_file($template_id);
-        if (!file_exists($template_path)) {
+        if (!$template_path || !file_exists($template_path)) {
+            $this->last_error = __('File template non trovato sul server. Ricarica l\'immagine.', 'attestati-webinar');
             return false;
         }
-        
+
         // Carica posizioni
         $positions = get_post_meta($attestato_id, '_att_field_positions', true);
-        
+
         // Carica immagine template
         $extension = strtolower(pathinfo($template_path, PATHINFO_EXTENSION));
-        
+
         switch ($extension) {
             case 'jpg':
             case 'jpeg':
@@ -174,26 +178,29 @@ class Att_Webinar_PDF_Generator {
                 $image = imagecreatefrompng($template_path);
                 break;
             default:
+                $this->last_error = sprintf(__('Formato immagine "%s" non supportato. Usa JPG o PNG.', 'attestati-webinar'), $extension);
                 return false;
         }
-        
+
         if (!$image) {
+            $this->last_error = __('Impossibile caricare l\'immagine template con GD.', 'attestati-webinar');
             return false;
         }
-        
+
         $width = imagesx($image);
         $height = imagesy($image);
-        
+
         // Font path - cerca in ordine: font custom, poi fallback multipiattaforma
         $font_path = $this->resolve_font_path();
         if (!$font_path) {
             imagedestroy($image);
+            $this->last_error = __('Nessun font TTF trovato. Verifica che assets/fonts/OpenSans.ttf esista.', 'attestati-webinar');
             return false;
         }
 
         // Aggiungi testi
-        foreach (['nome_cognome', 'titolo_webinar', 'data_webinar'] as $field) {
-            if (isset($positions[$field]) && isset($data[$field])) {
+        foreach (['nome_cognome', 'titolo_webinar', 'data_webinar', 'testo_custom'] as $field) {
+            if (isset($positions[$field]) && isset($data[$field]) && $data[$field] !== '') {
                 $pos = $positions[$field];
                 $x = ($pos['x'] / 100) * $width;
                 $y = ($pos['y'] / 100) * $height;
@@ -313,15 +320,14 @@ class Att_Webinar_PDF_Generator {
      */
     private function resolve_font_path() {
         $candidates = array(
+            // Font bundled con il plugin
+            ATT_WEBINAR_PATH . 'assets/fonts/OpenSans.ttf',
             ATT_WEBINAR_PATH . 'assets/fonts/Helvetica.ttf',
             // Linux (Ubuntu/Debian)
             '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
             '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
             // Linux (CentOS/RHEL)
             '/usr/share/fonts/dejavu/DejaVuSans.ttf',
-            // macOS
-            '/System/Library/Fonts/Helvetica.ttc',
-            '/Library/Fonts/Arial.ttf',
             // Windows
             'C:\\Windows\\Fonts\\arial.ttf',
         );

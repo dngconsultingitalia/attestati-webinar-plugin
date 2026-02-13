@@ -147,6 +147,9 @@ class Att_Webinar_Meta_Boxes {
         $template_id = get_post_meta($post->ID, '_att_template_id', true);
         $template_url = $template_id ? wp_get_attachment_url($template_id) : '';
         
+        // Testo personalizzato
+        $testo_custom = get_post_meta($post->ID, '_att_testo_custom', true);
+
         // Posizioni salvate
         $positions = get_post_meta($post->ID, '_att_field_positions', true);
         if (!$positions) {
@@ -154,52 +157,69 @@ class Att_Webinar_Meta_Boxes {
                 'nome_cognome' => array('x' => 50, 'y' => 40, 'size' => 24, 'color' => '#333333', 'font' => 'helvetica', 'align' => 'center'),
                 'titolo_webinar' => array('x' => 50, 'y' => 30, 'size' => 18, 'color' => '#477C80', 'font' => 'helvetica', 'align' => 'center'),
                 'data_webinar' => array('x' => 50, 'y' => 55, 'size' => 14, 'color' => '#666666', 'font' => 'helvetica', 'align' => 'center'),
+                'testo_custom' => array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'font' => 'helvetica', 'align' => 'center'),
                 'logo' => array('x' => 10, 'y' => 10, 'width' => 15),
                 'firma' => array('x' => 70, 'y' => 75, 'width' => 20),
             );
         }
+        // Assicura che testo_custom esista nelle posizioni (per attestati creati prima)
+        if (!isset($positions['testo_custom'])) {
+            $positions['testo_custom'] = array('x' => 50, 'y' => 65, 'size' => 14, 'color' => '#333333', 'font' => 'helvetica', 'align' => 'center');
+        }
         ?>
         <div class="att-editor-container">
             <div class="att-editor-canvas-wrapper">
-                <div class="att-editor-canvas" id="att-editor-canvas" 
+                <div class="att-editor-canvas" id="att-editor-canvas"
                      style="background-image: url('<?php echo esc_url($template_url); ?>');">
-                    
+
                     <?php if (!$template_url): ?>
                         <div class="att-no-template">
-                            <p><?php _e('Carica un template per posizionare i campi', 'attestati-webinar'); ?></p>
-                        </div>
-                    <?php else: ?>
-                        <!-- Campi draggable -->
-                        <div class="att-field att-field-text" id="field-nome_cognome" 
-                             data-field="nome_cognome"
-                             style="left: <?php echo esc_attr($positions['nome_cognome']['x']); ?>%; top: <?php echo esc_attr($positions['nome_cognome']['y']); ?>%;">
-                            <span class="att-field-label">Nome e Cognome</span>
-                        </div>
-                        
-                        <div class="att-field att-field-text" id="field-titolo_webinar"
-                             data-field="titolo_webinar"
-                             style="left: <?php echo esc_attr($positions['titolo_webinar']['x']); ?>%; top: <?php echo esc_attr($positions['titolo_webinar']['y']); ?>%;">
-                            <span class="att-field-label">Titolo Webinar</span>
-                        </div>
-                        
-                        <div class="att-field att-field-text" id="field-data_webinar"
-                             data-field="data_webinar"
-                             style="left: <?php echo esc_attr($positions['data_webinar']['x']); ?>%; top: <?php echo esc_attr($positions['data_webinar']['y']); ?>%;">
-                            <span class="att-field-label">Data Webinar</span>
-                        </div>
-                        
-                        <div class="att-field att-field-image" id="field-logo"
-                             data-field="logo"
-                             style="left: <?php echo esc_attr($positions['logo']['x']); ?>%; top: <?php echo esc_attr($positions['logo']['y']); ?>%;">
-                            <span class="att-field-label">Logo</span>
-                        </div>
-                        
-                        <div class="att-field att-field-image" id="field-firma"
-                             data-field="firma"
-                             style="left: <?php echo esc_attr($positions['firma']['x']); ?>%; top: <?php echo esc_attr($positions['firma']['y']); ?>%;">
-                            <span class="att-field-label">Firma</span>
+                            <p><?php _e('Carica un template per vedere lo sfondo', 'attestati-webinar'); ?></p>
                         </div>
                     <?php endif; ?>
+
+                    <!-- Campi draggable (sempre visibili) -->
+                    <div class="att-field att-field-text" id="field-nome_cognome"
+                         data-field="nome_cognome"
+                         data-pos-x="<?php echo esc_attr($positions['nome_cognome']['x']); ?>"
+                         data-pos-y="<?php echo esc_attr($positions['nome_cognome']['y']); ?>">
+                        <span class="att-field-label">Nome e Cognome</span>
+                    </div>
+
+                    <div class="att-field att-field-text" id="field-titolo_webinar"
+                         data-field="titolo_webinar"
+                         data-pos-x="<?php echo esc_attr($positions['titolo_webinar']['x']); ?>"
+                         data-pos-y="<?php echo esc_attr($positions['titolo_webinar']['y']); ?>">
+                        <span class="att-field-label">Titolo Webinar</span>
+                    </div>
+
+                    <div class="att-field att-field-text" id="field-data_webinar"
+                         data-field="data_webinar"
+                         data-pos-x="<?php echo esc_attr($positions['data_webinar']['x']); ?>"
+                         data-pos-y="<?php echo esc_attr($positions['data_webinar']['y']); ?>">
+                        <span class="att-field-label">Data Webinar</span>
+                    </div>
+
+                    <div class="att-field att-field-text" id="field-testo_custom"
+                         data-field="testo_custom"
+                         data-pos-x="<?php echo esc_attr($positions['testo_custom']['x']); ?>"
+                         data-pos-y="<?php echo esc_attr($positions['testo_custom']['y']); ?>">
+                        <span class="att-field-label">Testo Personalizzato</span>
+                    </div>
+
+                    <div class="att-field att-field-image" id="field-logo"
+                         data-field="logo"
+                         data-pos-x="<?php echo esc_attr($positions['logo']['x']); ?>"
+                         data-pos-y="<?php echo esc_attr($positions['logo']['y']); ?>">
+                        <span class="att-field-label">Logo</span>
+                    </div>
+
+                    <div class="att-field att-field-image" id="field-firma"
+                         data-field="firma"
+                         data-pos-x="<?php echo esc_attr($positions['firma']['x']); ?>"
+                         data-pos-y="<?php echo esc_attr($positions['firma']['y']); ?>">
+                        <span class="att-field-label">Firma</span>
+                    </div>
                 </div>
             </div>
             
@@ -282,8 +302,16 @@ class Att_Webinar_Meta_Boxes {
             
             <p>
                 <label for="att_webinar_date"><?php _e('Data Webinar', 'attestati-webinar'); ?></label>
-                <input type="date" name="att_webinar_date" id="att_webinar_date" class="widefat" 
+                <input type="date" name="att_webinar_date" id="att_webinar_date" class="widefat"
                        value="<?php echo esc_attr($webinar_date); ?>">
+            </p>
+
+            <p>
+                <label for="att_testo_custom"><?php _e('Testo Personalizzato', 'attestati-webinar'); ?></label>
+                <input type="text" name="att_testo_custom" id="att_testo_custom" class="widefat"
+                       value="<?php echo esc_attr(get_post_meta($post->ID, '_att_testo_custom', true)); ?>"
+                       placeholder="<?php _e('Es: ECM n. 12345 - 5 crediti formativi', 'attestati-webinar'); ?>">
+                <span class="description"><?php _e('Testo aggiuntivo da mostrare sull\'attestato', 'attestati-webinar'); ?></span>
             </p>
         </div>
         <?php
@@ -410,7 +438,11 @@ class Att_Webinar_Meta_Boxes {
         if (isset($_POST['att_webinar_date'])) {
             update_post_meta($post_id, '_att_webinar_date', sanitize_text_field($_POST['att_webinar_date']));
         }
-        
+
+        if (isset($_POST['att_testo_custom'])) {
+            update_post_meta($post_id, '_att_testo_custom', sanitize_text_field($_POST['att_testo_custom']));
+        }
+
         // Save send settings
         $send_auto = isset($_POST['att_send_auto']) ? '1' : '0';
         update_post_meta($post_id, '_att_send_auto', $send_auto);
@@ -446,7 +478,8 @@ class Att_Webinar_Meta_Boxes {
         if ($result) {
             wp_send_json_success(array('url' => $result));
         } else {
-            wp_send_json_error(__('Errore nella generazione dell\'anteprima', 'attestati-webinar'));
+            $error = isset($generator->last_error) ? $generator->last_error : __('Errore nella generazione dell\'anteprima', 'attestati-webinar');
+            wp_send_json_error($error);
         }
     }
     

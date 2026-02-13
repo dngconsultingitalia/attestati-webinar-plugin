@@ -72,7 +72,6 @@
     background-position: center;
     border: 1px solid #c3c4c7;
     border-radius: 4px;
-    overflow: hidden;
 }
 
 .att-no-template {
@@ -94,7 +93,6 @@
     cursor: move;
     font-size: 12px;
     white-space: nowrap;
-    transform: translate(-50%, -50%);
     transition: box-shadow 0.2s;
     z-index: 10;
 }
